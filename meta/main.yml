@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: Daniel Petisme
+  description: Manage Qlik resources via the Qlik Enterprise Manager API
+  license:
+  min_ansible_version: 2
+  platforms:
+    - name: EL
+      versions:
+        - 7
+  galaxy_tags:
+    - "qlik"
+    - "qlik enterprise manager"
+    - "qlik replicate"
+    - "qlik compose"
+    - "cdc"
+    - "change data capture"
+dependencies: []

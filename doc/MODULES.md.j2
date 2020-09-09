@@ -1,0 +1,111 @@
+# Ansible Attunity Enterprise Manager documentation
+
+## Authenticating with Attunity Enterprise Manager
+
+### Passing parameters
+If you wish to pass credentials as parameters to a task, use the following parameters:
+* `qem_hostname`
+* `qem_domain`
+* `qem_username`
+* `qem_password`
+* `qem_verify_certificate`
+
+Example:
+```
+- name: Single Task facts
+    qem_info:
+        qem_hostname: "qem.consto.com"
+        qem_domain: "CONTOSO"
+        qem_username: "John"
+        qem_password: "Passw0rd!"
+        qem_verify_certificate: yes
+        name: "My Task"
+        server: "My Sample Server"
+    register: output
+```
+
+### Using Environment variables
+
+To pass credentials via the environment, define the following variables:
+* `QEM_HOSTNAME`
+* `QEM_DOMAIN`
+* `QEM_USERNAME`
+* `QEM_PASSWORD`
+* `QEM_VERIFY_CERTIFICATE`
+
+### Storing in a file
+When working in a development environment, it may be desirable to store credentials in a file.
+The modules will look for credentials in `$HOME/.qem/credentials`. This file is an ini style file. It will look as follows:
+
+```
+[default]
+qem_hostname=qem.contoso.com
+qem_domain=CONTOSO
+qem_username=John
+qem_password=Passw0rd!
+qem_verify_certificate=True
+```
+
+It is also possible to add additional profiles. Specify the profile by passing defining the `profile` parameter or setting `QEM_PROFILE` in the environment.
+
+Example:
+```
+[default]
+qem_hostname=qem.contoso.com
+qem_domain=CONTOSO
+qem_username=John
+qem_password=Passw0rd!
+qem_verify_certificate=False
+
+[dev]
+qem_hostname=qem.dev.contoso.com
+qem_domain=CONTOSO
+qem_username=John
+qem_password=Passw0rd!
+qem_verify_certificate=False
+```
+
+```
+- name: Single Task facts
+    qem_task_info:
+        profile: "dev"
+        name: "My Task"
+        server: "My Sample Server"
+    register: output
+```
+
+## Modules
+
+{% for item in modules -%}
+  * [{{ item['doc']['module'] }}](#{{ item['doc']['module'] }}) - {{ item['doc']['short_description'] }}
+{% endfor %}
+
+{% for item in modules -%}
+### {{ item['doc']['module'] }}
+
+#### Synopsis
+
+{% for each in item['doc']['description'] %}{{ each }}
+{% endfor %}
+
+#### Parameters
+
+| Parameter     | Choices/Defaults | Comments |
+| ------------- | ---------------- |--------- |
+| qem_domain  |  |  Active Directory domain where to find the user.  | |
+| qem_hostname  |  |  Attunity Enterprise manager host name.  | |
+| qem_password  |  |  Active Directory user password.  | |
+| qem_username  |  |  Active Directory user to connect to Attunity Enterprise Manager.  | |
+| qem_verify_certificate  | Default:<br>**yes** |  Wether or not the server certificate should be verifies.  | |
+| profile  |  |  Security profile found in ~/.qem/credentials file.  | |
+{% for option,values in item['doc']['options'].items() -%}
+| {{ option }}{% if values['required'] %}<br> **required**{% endif %}  | {% if values['choices'] is defined %}Choices<br><ul>{% for each in values['choices'] %}<li>{% if values['default'] == each %}**{{ each }}**{% else %}{{ each }}{% endif %}</li>{% endfor %}</ul>{% elif values['default'] is defined%}Default:<br>**{{ values['default'] | yesno }}**{% endif %} | {% if values['description'] is defined %}{% for each in values['description'] %} {{ each }} {% endfor %}{% endif %} | |
+{% endfor -%}
+
+{% if item['examples'] is defined %}
+#### Examples
+
+```{{ item['examples'] }}
+```
+{% endif %}
+{% endfor %}

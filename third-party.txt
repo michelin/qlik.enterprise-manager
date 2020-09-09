@@ -1,0 +1,11 @@
+  
+This document contains the list of Third Party Software included with
+qlik.enterprise-manager, along with the license information.
+
+Third Party Software may impose additional restrictions and it is the
+user's responsibility to ensure that they have met the licensing
+requirements of qlik.enterprise-manager and the relevant license of the Third Party
+Software they are using.
+
+aem_client - https://github.com/michelin/qlik.enterprise-manager/blob/master/module_utils/aem_client.py
+License:  Apache License
