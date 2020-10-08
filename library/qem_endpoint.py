@@ -259,6 +259,17 @@ class QemEndpointManager(QemModuleBase):
             return matches[0]
         return None
 
+    def get_server_version(self):
+        response = self.aem_client.get_server_details(server=self.server)
+        version = response.server_details.version
+        version_parts = version.split('.')
+        return dict(
+            version=version,
+            version_major=version_parts[0],
+            version_minor=version_parts[1],
+            version_revision=version_parts[3]
+        )
+
     def import_endpoint(self):
         # QEM does not provide a direct API to create endpoints. Nevertheless, the endpoints are created if a task is imported.
         # The "trick" is to generate a dummy task which will piggyback the endpoint to create.
@@ -272,7 +283,9 @@ class QemEndpointManager(QemModuleBase):
         task_name = 'ansible-import-endpoint-{0}'.format(transaction_id)
         import_task['cmd.replication_definition']['tasks'][0]['task']['name'] = task_name
         dummy_endpoint_name = 'ansible-import-endpoint-dummy-{0}'.format(transaction_id)
-
+        # Qlik Replicate backward compatibility consists in fallbacking to the default options if no explicit version set
+        # We use the one from the target cluster, this means you need version consistency accross your environments
+        import_task["_version"] = self.get_server_version()
         if self.endpoint_object['role'] != 'SOURCE' and self.endpoint_object['role'] != 'TARGET':
             self.fail(msg='Import a endpoint with Role=BOTH or ROLE=ALL is not yet implemented.')
 
