@@ -214,8 +214,10 @@ class QemTaskManager(QemModuleBase):
                 self.name = self.task_object['cmd.replication_definition']['tasks'][0]['task']['name']
             else:
                 self.task_object['cmd.replication_definition']['tasks'][0]['task']['name'] = self.name
-            if not self.task_object['_version']
+
+            if not self.task_object['_version']:
                 self.task_object['_version'] = self.get_server_version()
+
         states = {
             "present": self.import_task,
             "absent": self.delete_task,
