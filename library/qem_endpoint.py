@@ -11,6 +11,8 @@ short_description: Manage Qlik Replicate/Compose endpoint via Qlik Enterprise Ma
 version_added: "1.0"
 description:
     - Manage Qlik Replicate/Compose endpoint using the Qlik Enterprise Manager API Python client. If the endpoint already exists on the target server, the import will override its configuration.
+    - The endpoint will be created according to the target QEM version.
+    - There are no backward compatibility guarantees if you try to import an endpoint definition (eg. 6.6) on a old QEM instance (eg. 6.4).
 options:
     name:
         description:
@@ -284,7 +286,7 @@ class QemEndpointManager(QemModuleBase):
         import_task['cmd.replication_definition']['tasks'][0]['task']['name'] = task_name
         dummy_endpoint_name = 'ansible-import-endpoint-dummy-{0}'.format(transaction_id)
         # Qlik Replicate backward compatibility consists in fallbacking to the default options if no explicit version set
-        # We use the one from the target cluster, this means you need version consistency accross your environments
+        # We use the one from the target cluster, this means you need consistency accross your environments
         import_task["_version"] = self.get_server_version()
         if self.endpoint_object['role'] != 'SOURCE' and self.endpoint_object['role'] != 'TARGET':
             self.fail(msg='Import a endpoint with Role=BOTH or ROLE=ALL is not yet implemented.')

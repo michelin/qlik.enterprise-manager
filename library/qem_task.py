@@ -10,6 +10,8 @@ short_description: Manage Qlik Replicate/Compose task via Qlik Enterprise Manage
 version_added: "1.0"
 description:
     - Manage Qlik Replicate/Compose task using the Qlik Enterprise Manager API Python client
+    - The task will be created according to the target QEM version.
+    - There are no backward compatibility guarantees if you try to import a task definition (eg. 6.6) on a old QEM instance (eg. 6.4).
 options:
     name:
         description:
