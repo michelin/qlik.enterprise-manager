@@ -10,6 +10,8 @@ short_description: Manage Qlik Replicate/Compose task via Qlik Enterprise Manage
 version_added: "1.0"
 description:
     - Manage Qlik Replicate/Compose task using the Qlik Enterprise Manager API Python client
+    - The task will be created according to the target QEM version.
+    - There are no backward compatibility guarantees if you try to import a task definition (eg. 6.6) on a old QEM instance (eg. 6.4).
 options:
     name:
         description:
@@ -192,6 +194,17 @@ class QemTaskManager(QemModuleBase):
 
         super(QemTaskManager, self).__init__(derived_arg_spec=self.module_arg_spec)
 
+    def get_server_version(self):
+        response = self.aem_client.get_server_details(server=self.server)
+        version = response.server_details.version
+        version_parts = version.split('.')
+        return dict(
+            version=version,
+            version_major=version_parts[0],
+            version_minor=version_parts[1],
+            version_revision=version_parts[3]
+        )
+
     def exec_module(self, **kwargs):
 
         for key in list(self.module_arg_spec.keys()):
@@ -203,6 +216,9 @@ class QemTaskManager(QemModuleBase):
                 self.name = self.task_object['cmd.replication_definition']['tasks'][0]['task']['name']
             else:
                 self.task_object['cmd.replication_definition']['tasks'][0]['task']['name'] = self.name
+
+            if not self.task_object['_version']:
+                self.task_object['_version'] = self.get_server_version()
 
         states = {
             "present": self.import_task,

@@ -213,6 +213,8 @@ Return Qlik Replicate/Compose task facts using the Qlik Enterprise Manager API P
 #### Synopsis
 
 Manage Qlik Replicate/Compose endpoint using the Qlik Enterprise Manager API Python client. If the endpoint already exists on the target server, the import will override its configuration.
+The endpoint will be created according to the target QEM version.
+There are no backward compatibility guarantees if you try to import an endpoint definition (eg. 6.6) on a old QEM instance (eg. 6.4).
 
 
 #### Parameters
@@ -368,6 +370,8 @@ Create or remove Qlik Replicate/Compose servers using the Qlik Enterprise Manage
 #### Synopsis
 
 Manage Qlik Replicate/Compose task using the Qlik Enterprise Manager API Python client
+The task will be created according to the target QEM version.
+There are no backward compatibility guarantees if you try to import a task definition (eg. 6.6) on a old QEM instance (eg. 6.4).
 
 
 #### Parameters
