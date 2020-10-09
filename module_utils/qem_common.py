@@ -62,8 +62,8 @@ class QemModuleBase(object):
             qem_verify_certificate = ast.literal_eval(qem_verify_certificate)
         try:
             b64_username_password = base64.b64encode(
-                '{0}\\{1}:{2}'.format(qem_domain, qem_username, qem_password)
-            ).decode('ascii')
+                '{0}\\{1}:{2}'.format(qem_domain, qem_username, qem_password).encode('utf-8')
+            ).decode('utf-8')
             return AemClient(
                 b64_username_password=b64_username_password,
                 machine_name=qem_hostname,
