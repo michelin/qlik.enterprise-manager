@@ -5,6 +5,8 @@ Ansible role to automate [Qlik](https://www.qlik.com/us/products/data-integratio
 ## Introduction
 This Ansible role provides a way to automate the interactions with Qlik Enterprise Manager API to manage the servers, endpoints and tasks.
 
+The ansible module requires Python 3.
+
 ## Installation
 
 You can use ansible galaxy to install the role in the `$ANSIBLE_ROLES_PATH` or use the `--roles-path` flag to change the destination.
