@@ -41,18 +41,38 @@ options:
         type: int
         default: 60
         required: False
+    option:
+        description:
+            - If I(option=resume_processing), resumes task execution from the point that it was stopped.
+            - If I(option=reload_target), re-starts the full-load replication process if the task was previously run.
+            - If I(option=resume_processing_from_timestamp), starts the CDC replication task from a specific point.
+            - If I(option=metadata_only_recreate_all_tables), recovers a task using the recovery state stored locally in the task folder (located under the Data folder).
+            - If I(option=metadata_only_create_missing_tables), recovers a task using the CHECKPOINT value from the attrep_txn_state table (created in the target database).
+            - If I(option=recover_using_locally_stored_checkpoint), recovers a task using the CHECKPOINT value from the attrep_txn_state table (created in the target database).
+            - If I(option=recover_using_checkpoint_stored_on_target), creates missing target tables, including Change Tables.
+
+        default: 'resume_processing'
+        choices:
+            - resume_processing
+            - reload_target
+            - resume_processing_from_timestamp
+            - metadata_only_recreate_all_tables
+            - metadata_only_create_missing_tables
+            - recover_using_locally_stored_checkpoint
+            - recover_using_checkpoint_stored_on_target
 
 author:
     - Daniel Petisme (daniel.petisme@michelin.com)
 '''
 EXAMPLES = '''
-# Starting a task with a extended timeout
+# Starting a task with a extended timeout and restart the full load replication process
 - name: Started sample task
     qem_task_status:
         name: "My Sample Task"
         server: "My Sample Server"
         timeout: 120
         state: started
+        option: reload_target
 
 # Stopping a task
 - name: Stop sample task
@@ -75,13 +95,15 @@ class QemTaskStatusManager(QemModuleBase):
             name=dict(required=False, aliases=['task_name']),
             state=dict(default='present', choices=['present', 'absent', 'started', 'stopped']),
             server=dict(required=True, aliases=['replicate_server', 'compose_server']),
-            timeout=dict(required=False, type='int', default=60)
+            timeout=dict(required=False, type='int', default=60),
+            option=dict(required=False, choices=[e.name.lower() for e in AemRunTaskOptions], default=AemRunTaskOptions.RESUME_PROCESSING.name.lower())
         )
 
         self.state = None
         self.server = None
         self.name = None
         self.timeout = None
+        self.option = None
 
         super(QemTaskStatusManager, self).__init__(derived_arg_spec=self.module_arg_spec)
 
@@ -128,7 +150,7 @@ class QemTaskStatusManager(QemModuleBase):
                     payload=AemRunTaskReq(),
                     server=self.server,
                     task=self.name,
-                    option=AemRunTaskOptions.RESUME_PROCESSING,
+                    option=AemRunTaskOptions[self.option.upper()],
                     timeout=self.timeout)
                 if result.state == AemTaskState.RUNNING:
                     self.results['changed'] = True
