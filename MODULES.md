@@ -289,6 +289,7 @@ Manage Qlik Replicate/Compose task status using the Qlik Enterprise Manager API 
 | qem_verify_certificate  | Default:<br>**yes** |  Wether or not the server certificate should be verifies.  | |
 | profile  |  |  Security profile found in ~/.qem/credentials file.  | |
 | name<br> **required**  |  |  The name of the task you wan to start/stop  | |
+| option  | Choices<br><ul><li>**resume_processing**</li><li>reload_target</li><li>resume_processing_from_timestamp</li><li>metadata_only_recreate_all_tables</li><li>metadata_only_create_missing_tables</li><li>recover_using_locally_stored_checkpoint</li><li>recover_using_checkpoint_stored_on_target</li></ul> |  If I(option=resume_processing), resumes task execution from the point that it was stopped.  If I(option=reload_target), re-starts the full-load replication process if the task was previously run.  If I(option=resume_processing_from_timestamp), starts the CDC replication task from a specific point.  If I(option=metadata_only_recreate_all_tables), recovers a task using the recovery state stored locally in the task folder (located under the Data folder).  If I(option=metadata_only_create_missing_tables), recovers a task using the CHECKPOINT value from the attrep_txn_state table (created in the target database).  If I(option=recover_using_locally_stored_checkpoint), recovers a task using the CHECKPOINT value from the attrep_txn_state table (created in the target database).  If I(option=recover_using_checkpoint_stored_on_target), creates missing target tables, including Change Tables.  | |
 | server<br> **required**  |  |  The server on which the task is defined  | |
 | state  | Choices<br><ul><li>started</li><li>stopped</li></ul> |  If I(state=started), task will be started  If I(state=stopped), task will be stopped  | |
 | timeout  | Default:<br>**60** |  A timeout in seconds before raising an issue during the task starting/stopping  | |
@@ -296,13 +297,14 @@ Manage Qlik Replicate/Compose task status using the Qlik Enterprise Manager API 
 #### Examples
 
 ```
-# Starting a task with a extended timeout
+# Starting a task with a extended timeout and restart the full load replication process
 - name: Started sample task
     qem_task_status:
         name: "My Sample Task"
         server: "My Sample Server"
         timeout: 120
         state: started
+        option: reload_target
 
 # Stopping a task
 - name: Stop sample task
